@@ -1,19 +1,24 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import IProduct from "../types/product";
-
-interface IProps {
+import IProduct from "../interfaces/product";
+interface ProductDetailPage {
   products: IProduct[];
 }
 
-const ProductDetailPage = (props: IProps) => {
+const ProductDetailPage = ({ products }: ProductDetailPage) => {
+  if (!products)
+    return (
+      <div>
+        <p>Loading...</p>
+      </div>
+    );
   const { id } = useParams();
   const [product, setProduct] = useState<IProduct>();
 
   useEffect(() => {
-    const currentPro = props.products?.find((product) => product._id === id);
+    const currentPro = products?.find((product) => product._id === id);
     setProduct(currentPro!);
-  }, [props]);
+  }, [products]);
 
   return (
     <>

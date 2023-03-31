@@ -1,61 +1,54 @@
-import { ChangeEvent, FormEvent, useState } from "react";
+import Cookies from "js-cookie";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { signin } from "../api/auth";
-import IUser from "../types/auth";
-import Cookies from "js-cookie";
+import IUser from "../interfaces/auth";
 
 const SigninPage = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<IUser>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IUser>();
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setUser({
-      ...(user! || {}),
-      [name]: value,
-    });
-  };
-
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const onSubmit: SubmitHandler<IUser> = async (inputValue: IUser) => {
     try {
-      const { data } = await signin(user!);
+      const { data } = await signin(inputValue);
       Cookies.set("accessToken", data.accessToken, {
         expires: new Date(Date.now() + 30 * 60 * 1000),
       });
       alert("Đăng nhập thành công!");
       navigate("/admin");
-    } catch ({ response }) {
-      console.log(response);
+    } catch (error) {
+      console.log(error);
     }
   };
 
   return (
     <div style={{ width: 300 }}>
       <h2>Signin</h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-3">
           <label className="form-label">Email address</label>
           <input
             type="email"
-            name="email"
             className="form-control"
-            onChange={handleChange}
+            {...register("email", { required: true })}
           />
+          {errors.email && <p>Email không được trống!</p>}
         </div>
         <div className="mb-3">
           <label className="form-label">Password</label>
           <input
             type="password"
-            name="password"
             className="form-control"
-            onChange={handleChange}
+            {...register("password", { required: true })}
           />
+          {errors.password && <p>Password không được trống!</p>}
         </div>
 
-        <button type="submit" className="btn btn-primary">
-          Đăng nhập
-        </button>
+        <button className="btn btn-primary">Đăng nhập</button>
       </form>
     </div>
   );

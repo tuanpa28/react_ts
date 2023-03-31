@@ -1,16 +1,21 @@
 import { Link } from "react-router-dom";
-import IProduct from "../types/product";
-
-interface IProps {
+import IProduct from "../interfaces/product";
+interface ProductsPage {
   products: IProduct[];
 }
 
-const ProductsPage = (props: IProps) => {
+const ProductsPage = ({ products }: ProductsPage) => {
+  if (!products)
+    return (
+      <div>
+        <p>Loading...</p>
+      </div>
+    );
   return (
     <>
       <h2>Products Page</h2>
       <div className="row row-cols-2 row-cols-md-3 mt-4">
-        {props.products?.map((product) => (
+        {products?.map((product) => (
           <div key={product._id} className="card">
             <div className="row g-0">
               <div className="col-md-4">

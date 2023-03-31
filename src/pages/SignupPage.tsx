@@ -1,21 +1,19 @@
-import { ChangeEvent, FormEvent, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { signup } from "../api/auth";
-import IUser from "../types/auth";
+import IUser from "../interfaces/auth";
 
 const SignupPage = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<IUser>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IUser>();
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setUser({ ...(user! || {}), [name]: value });
-  };
-
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const onSubmit: SubmitHandler<IUser> = async (data: IUser) => {
     try {
-      await signup(user!);
+      await signup(data!);
       alert("Đăng ký thành công!");
       navigate("/signin");
     } catch (error) {
@@ -26,47 +24,45 @@ const SignupPage = () => {
   return (
     <div style={{ width: 300 }}>
       <h2>Signup</h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-3">
           <label className="form-label">Name</label>
           <input
             type="text"
-            name="name"
             className="form-control"
-            onChange={handleChange}
+            {...register("name", { required: true })}
           />
+          {errors.name && <p>Name không được trống!</p>}
         </div>
         <div className="mb-3">
           <label className="form-label">Email address</label>
           <input
             type="email"
-            name="email"
             className="form-control"
-            onChange={handleChange}
+            {...register("email", { required: true })}
           />
+          {errors.email && <p>Email không được trống!</p>}
         </div>
         <div className="mb-3">
           <label className="form-label">Password</label>
           <input
             type="password"
-            name="password"
             className="form-control"
-            onChange={handleChange}
+            {...register("password", { required: true })}
           />
+          {errors.password && <p>Password không được trống!</p>}
         </div>
         <div className="mb-3">
           <label className="form-label">Confirm Password</label>
           <input
             type="password"
-            name="confirmPassword"
             className="form-control"
-            onChange={handleChange}
+            {...register("confirmPassword", { required: true })}
           />
+          {errors.confirmPassword && <p>ConfirmPassword không được trống!</p>}
         </div>
 
-        <button type="submit" className="btn btn-primary">
-          Đăng ký
-        </button>
+        <button className="btn btn-primary">Đăng ký</button>
       </form>
     </div>
   );

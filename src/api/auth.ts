@@ -1,5 +1,5 @@
 import instance from "./config";
-import IUser from "../types/auth";
+import IUser from "../interfaces/auth";
 
 const signup = (user: IUser) => {
   return instance.post(`/signup`, user);

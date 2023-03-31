@@ -1,5 +1,5 @@
 import instance from "./config";
-import IProduct from "../types/product";
+import IProduct from "../interfaces/product";
 import Cookies from "js-cookie";
 
 let accessToken = Cookies.get("accessToken");

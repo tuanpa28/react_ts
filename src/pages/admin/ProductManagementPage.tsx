@@ -1,13 +1,22 @@
 import Cookies from "js-cookie";
 import { Link, useNavigate } from "react-router-dom";
-import IProduct from "../../types/product";
-
-interface IProps {
+import IProduct from "../../interfaces/product";
+interface ProductManagementPage {
   products: IProduct[];
   onHandleRemove: (id: string) => void;
 }
 
-const ProductManagementPage = (props: IProps) => {
+const ProductManagementPage = ({
+  products,
+  onHandleRemove,
+}: ProductManagementPage) => {
+  if (!products)
+    return (
+      <div>
+        <p>Loading...</p>
+      </div>
+    );
+
   const navigate = useNavigate();
 
   const handleRemoveCookies = () => {
@@ -42,7 +51,7 @@ const ProductManagementPage = (props: IProps) => {
           </tr>
         </thead>
         <tbody>
-          {props?.products?.map((pro, i) => (
+          {products?.map((pro, i) => (
             <tr key={pro._id}>
               <th scope="row">{i + 1}</th>
               <td>{pro.name}</td>
@@ -58,7 +67,7 @@ const ProductManagementPage = (props: IProps) => {
               <td>{pro.description}</td>
               <td>
                 <button
-                  onClick={() => props?.onHandleRemove(pro._id!)}
+                  onClick={() => onHandleRemove(pro._id!)}
                   className="btn btn-secondary"
                 >
                   Remove

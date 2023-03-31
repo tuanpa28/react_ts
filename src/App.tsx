@@ -1,40 +1,30 @@
-import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
-import { Navigate, Outlet, Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
+import "./App.css";
 import {
   createProduct,
   deleteProduct,
   getProducts,
   updateProduct,
 } from "./api/product";
-import "./App.css";
 import reactLogo from "./assets/react.svg";
-import AddProductPage from "./pages/admin/AddProductPage";
-import DashboardPage from "./pages/admin/DashboardPage";
-import ProductManagementPage from "./pages/admin/ProductManagementPage";
-import UpdateProductPage from "./pages/admin/UpdateProductPage";
+import AdminLayout from "./components/layouts/adminLayout";
+import BaseLayout from "./components/layouts/baseLayout";
+import IProduct from "./interfaces/product";
 import HomePage from "./pages/HomePage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import ProductsPage from "./pages/ProductsPage";
 import SigninPage from "./pages/SigninPage";
 import SignupPage from "./pages/SignupPage";
-import IProduct from "./types/product";
-import viteLogo from "/vite.svg";
+import AddProductPage from "./pages/admin/AddProductPage";
+import DashboardPage from "./pages/admin/DashboardPage";
+import ProductManagementPage from "./pages/admin/ProductManagementPage";
+import UpdateProductPage from "./pages/admin/UpdateProductPage";
 
 function App() {
   const navigate = useNavigate();
   const [products, setProducts] = useState<IProduct[]>([]);
-
-  // Admin Wrapper
-  const AdminWrapper = () => {
-    return Cookies.get("accessToken") ? (
-      <Outlet />
-    ) : (
-      (alert("Mời đăng nhập để truy cập quản trị!"),
-      (<Navigate to="/signin" replace />))
-    );
-  };
 
   // Get Products
   useEffect(() => {
@@ -95,16 +85,13 @@ function App() {
   return (
     <div className="App">
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
         <a href="https://reactjs.org" target="_blank">
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
       <Routes>
         {/* Client */}
-        <Route path="/">
+        <Route path="/" element={<BaseLayout />}>
           <Route index element={<HomePage />} />
           {/* Products */}
           <Route path="products">
@@ -123,7 +110,7 @@ function App() {
         </Route>
 
         {/* Admin */}
-        <Route path="admin" element={<AdminWrapper />}>
+        <Route path="admin" element={<AdminLayout />}>
           <Route index element={<DashboardPage />} />
           {/* products */}
           <Route path="products">
