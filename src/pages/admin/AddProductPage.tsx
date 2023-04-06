@@ -1,66 +1,121 @@
 import IProduct from "../../interfaces/product";
-import { useForm, SubmitHandler } from "react-hook-form";
-interface AddProductPage {
+import ICategory from "../../interfaces/category";
+import { Button, Form, Input, InputNumber, Typography, Select } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
+import { Space, Upload } from "antd";
+interface IAddProductPage {
   onHandleCreate: (product: IProduct) => void;
+  categories: ICategory[];
 }
 
-const AddProductPage = ({ onHandleCreate }: AddProductPage) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<IProduct>();
+const AddProductPage = ({ onHandleCreate, categories }: IAddProductPage) => {
+  const selectOptions = categories?.map((cate) => {
+    return { label: `${cate.name}`, value: `${cate._id}` };
+  });
 
-  const onSubmit: SubmitHandler<IProduct> = (inputValue: IProduct) => {
-    onHandleCreate(inputValue);
+  const layout = {
+    labelCol: { span: 8 },
+    wrapperCol: { span: 16 },
+  };
+
+  /* eslint-disable no-template-curly-in-string */
+  const validateMessages = {
+    required: "${label} is required!",
+  };
+
+  const onFinish = (values: IProduct) => {
+    console.log(values);
+    onHandleCreate(values);
   };
 
   return (
-    <div style={{ width: 300 }}>
-      <h2>Create Product</h2>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="mb-3">
-          <label className="form-label">Name</label>
-          <input
-            type="text"
-            className="form-control"
-            {...register("name", { required: true })}
-          />
-          {errors.name && <p>Name không được trống!</p>}
-        </div>
+    <Form
+      {...layout}
+      name="nest-messages"
+      onFinish={onFinish}
+      style={{ maxWidth: 800 }}
+      validateMessages={validateMessages}
+    >
+      <Typography.Title level={2}>Thêm sản phẩm</Typography.Title>
+      <Form.Item
+        name="name"
+        label="Name"
+        rules={[
+          { required: true },
+          { whitespace: true, message: "${label} is required!" },
+        ]}
+      >
+        <Input size="large" placeholder="Product Name" />
+      </Form.Item>
 
-        <div className="mb-3">
-          <label className="form-label">Image</label>
-          <input
-            type="text"
-            className="form-control"
-            {...register("image", { required: true })}
-          />
-          {errors.image && <p>Image không được trống!</p>}
-        </div>
+      <Form.Item
+        name="price"
+        label="Price"
+        rules={[{ required: true, type: "number", min: 0 }]}
+      >
+        <InputNumber
+          size="large"
+          placeholder="Product Price"
+          style={{ width: "100%" }}
+        />
+      </Form.Item>
 
-        <div className="mb-3">
-          <label className="form-label">Price</label>
-          <input
-            type="number"
-            className="form-control"
-            {...register("price", { required: true })}
-          />
-          {errors.price && <p>Price không được trống!</p>}
-        </div>
+      <Form.Item
+        name="image"
+        label="Image"
+        rules={[
+          { required: true },
+          { whitespace: true, message: "${label} is required!" },
+        ]}
+      >
+        <Input
+          size="large"
+          placeholder="Product Image"
+          addonBefore="https://"
+          addonAfter=".com"
+        />
+      </Form.Item>
 
-        <div className="form-floating mb-3">
-          <textarea
-            className="form-control"
-            {...register("description", { required: true })}
-          />
-          {errors.description && <p>Description không được trống!</p>}
-          <label>Description</label>
-        </div>
+      {/* <Form.Item name="image" label="Image" rules={[{ required: true }]}>
+        <Upload
+          // action="https://api.cloudinary.com/v1_1/dugodumc5/image/upload"
+          listType="picture"
+          // maxCount={3}
+          // multiple
+        >
+          <Button icon={<UploadOutlined />}>Upload Image</Button>
+        </Upload>
+      </Form.Item> */}
 
-        <button className="btn btn-secondary">More product</button>
-      </form>
-    </div>
+      <Form.Item
+        name="description"
+        label="Description"
+        rules={[
+          { required: true },
+          { whitespace: true, message: "${label} is required!" },
+        ]}
+      >
+        <Input.TextArea rows={4} placeholder="Description" />
+      </Form.Item>
+
+      <Form.Item
+        name="categoryId"
+        label="Category"
+        rules={[{ required: true }]}
+      >
+        <Select
+          size="large"
+          placeholder="---- Category ----"
+          options={selectOptions}
+        />
+      </Form.Item>
+
+      <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
+        <Button size="large" type="primary" htmlType="submit">
+          Thêm sản phẩm
+        </Button>
+      </Form.Item>
+    </Form>
   );
 };
 

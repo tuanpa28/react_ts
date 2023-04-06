@@ -1,51 +1,58 @@
 import { Link } from "react-router-dom";
 import IProduct from "../interfaces/product";
+import { Card, Col, Row, Spin, Input } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
+import React, { useState } from "react";
+
+const { Search } = Input;
+
+const { Meta } = Card;
+
 interface ProductsPage {
   products: IProduct[];
 }
 
 const ProductsPage = ({ products }: ProductsPage) => {
-  if (!products)
-    return (
-      <div>
-        <p>Loading...</p>
-      </div>
-    );
+  const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
+  if (!products) return <Spin indicator={antIcon} />;
+
+  const [searchText, setSearchText] = useState("");
+
+  const filterPro = products?.filter((item) =>
+    item?.name.toLocaleLowerCase().includes(searchText.toLocaleLowerCase())
+  );
   return (
-    <>
-      <h2>Products Page</h2>
-      <div className="row row-cols-2 row-cols-md-3 mt-4">
-        {products?.map((product) => (
-          <div key={product._id} className="card">
-            <div className="row g-0">
-              <div className="col-md-4">
-                <Link to={`/products/${product._id}`}>
-                  <img
-                    src={product.image}
-                    className="img-fluid rounded-start"
-                    alt="..."
-                  />
-                </Link>
-              </div>
-              <div className="col-md-8">
-                <div className="card-body">
-                  <h5 className="card-title">{product.name}</h5>
-                  <p className="card-text">{product.description}</p>
-                  <p className="card-text">
-                    <small className="text-muted">
-                      {product.price?.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })}
-                    </small>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+    <div style={{ maxWidth: "90%", margin: "0 auto" }}>
+      <Search
+        style={{ width: "22%", margin: 20, marginBottom: 40, marginLeft: 40 }}
+        placeholder="Search name . . ."
+        size="large"
+        value={searchText}
+        onChange={(event) => setSearchText(event.target.value)}
+        loading
+      />
+      <Row gutter={[16, 16]}>
+        {filterPro?.map((product) => (
+          <Col span={6}>
+            <Link to={`/products/${product._id}`}>
+              <Card
+                hoverable
+                style={{ width: 280 }}
+                cover={<img src={product.image} />}
+              >
+                <Meta
+                  title={product.name}
+                  description={product.price?.toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+                />
+              </Card>
+            </Link>
+          </Col>
         ))}
-      </div>
-    </>
+      </Row>
+    </div>
   );
 };
 

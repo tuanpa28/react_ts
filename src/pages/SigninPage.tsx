@@ -1,24 +1,20 @@
 import Cookies from "js-cookie";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { signin } from "../api/auth";
 import IUser from "../interfaces/auth";
+import { LockOutlined, MailOutlined } from "@ant-design/icons";
+import { Button, Form, Input, Typography, message } from "antd";
 
 const SigninPage = () => {
   const navigate = useNavigate();
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<IUser>();
 
-  const onSubmit: SubmitHandler<IUser> = async (inputValue: IUser) => {
+  const onFinish = async (values: IUser) => {
     try {
-      const { data } = await signin(inputValue);
+      const { data } = await signin(values);
       Cookies.set("accessToken", data.accessToken, {
         expires: new Date(Date.now() + 30 * 60 * 1000),
       });
-      alert("Đăng nhập thành công!");
+      message.success('Đăng nhập thành công!');
       navigate("/admin");
     } catch (error) {
       console.log(error);
@@ -26,31 +22,49 @@ const SigninPage = () => {
   };
 
   return (
-    <div style={{ width: 300 }}>
-      <h2>Signin</h2>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="mb-3">
-          <label className="form-label">Email address</label>
-          <input
-            type="email"
-            className="form-control"
-            {...register("email", { required: true })}
-          />
-          {errors.email && <p>Email không được trống!</p>}
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Password</label>
-          <input
-            type="password"
-            className="form-control"
-            {...register("password", { required: true })}
-          />
-          {errors.password && <p>Password không được trống!</p>}
-        </div>
+    <Form
+      name="basic"
+      style={{ maxWidth: 350, margin: "0 auto", marginTop: 100 }}
+      initialValues={{ remember: true }}
+      onFinish={onFinish}
+      autoComplete="off"
+    >
+      <Typography.Title level={2}>Đăng nhập</Typography.Title>
+      <Form.Item
+        name="email"
+        rules={[{ required: true, message: "Vui lòng nhập Email!" }]}
+      >
+        <Input
+          type="email"
+          size="large"
+          prefix={<MailOutlined />}
+          placeholder="Email"
+        />
+      </Form.Item>
+      <Form.Item
+        name="password"
+        rules={[{ required: true, message: "Vui lòng nhập Password!" }]}
+      >
+        <Input.Password
+          size="large"
+          prefix={<LockOutlined />}
+          placeholder="Password"
+        />
+      </Form.Item>
 
-        <button className="btn btn-primary">Đăng nhập</button>
-      </form>
-    </div>
+      <Form.Item>
+        <Button
+         size="large"
+          type="primary"
+          htmlType="submit"
+          className="login-form-button"
+          style={{ width: "100%" }}
+        >
+          Đăng nhập
+        </Button>
+        Or <Link to={"/signup"}>register now!</Link>
+      </Form.Item>
+    </Form>
   );
 };
 

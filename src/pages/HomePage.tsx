@@ -1,22 +1,13 @@
-import { Link } from "react-router-dom";
+import { SmileOutlined } from "@ant-design/icons";
+import { Button, Result } from "antd";
 
 const HomePage = () => {
   return (
-    <>
-      <h2>HomePage</h2>
-      <div>
-        <span className="mx-2">
-          <Link to={"/signin"}>
-            <button className="btn btn-secondary">Đăng nhập</button>
-          </Link>
-        </span>
-        <span>
-          <Link to={"/signup"}>
-            <button className="btn btn-secondary">Đăng ký</button>
-          </Link>
-        </span>
-      </div>
-    </>
+    <Result
+      icon={<SmileOutlined />}
+      title="Welcome to the Website!"
+      // extra={<Button type="primary">Next</Button>}
+    />
   );
 };
 
