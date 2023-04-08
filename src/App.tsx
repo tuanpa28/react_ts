@@ -81,7 +81,6 @@ function App() {
   const onHandleCreateCategory = async (category: ICategory) => {
     try {
       const { data } = await createCategory(category);
-      console.log(data);
       setCategories([...categories, data?.category]);
       message.success(`Thêm danh mục thành công!`);
       navigate("/admin/category");
@@ -110,8 +109,6 @@ function App() {
   const onHandleUpdateCategory = async (category: ICategory) => {
     try {
       const { data } = await updateCategory(category);
-      console.log(data);
-
       const newCate = categories?.map((item) =>
         item._id === data?.category?._id ? data.category : item
       );

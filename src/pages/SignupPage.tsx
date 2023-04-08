@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { signup } from "../api/auth";
 import IUser from "../interfaces/auth";
-import { Button, Form, Input, Typography } from "antd";
+import { Button, Form, Input, Typography, message, notification } from "antd";
 import { LockOutlined, UserOutlined, MailOutlined } from "@ant-design/icons";
 
 const SignupPage = () => {
@@ -10,10 +10,12 @@ const SignupPage = () => {
   const onFinish = async (values: IUser) => {
     try {
       await signup(values);
-      alert("Đăng ký thành công!");
+      message.success("Đăng ký thành công!");
       navigate("/signin");
-    } catch (error) {
-      console.log(error);
+    } catch ({ response }: any) {
+      notification.error({
+        message: response.data.message,
+      });
     }
   };
 

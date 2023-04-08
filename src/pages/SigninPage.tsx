@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { signin } from "../api/auth";
 import IUser from "../interfaces/auth";
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
-import { Button, Form, Input, Typography, message } from "antd";
+import { Button, Form, Input, Typography, message, notification } from "antd";
 
 const SigninPage = () => {
   const navigate = useNavigate();
@@ -14,10 +14,12 @@ const SigninPage = () => {
       Cookies.set("accessToken", data.accessToken, {
         expires: new Date(Date.now() + 30 * 60 * 1000),
       });
-      message.success('Đăng nhập thành công!');
+      message.success("Đăng nhập thành công!");
       navigate("/admin");
-    } catch (error) {
-      console.log(error);
+    } catch ({ response }: any) {
+      notification.error({
+        message: response.data.message,
+      });
     }
   };
 
@@ -54,7 +56,7 @@ const SigninPage = () => {
 
       <Form.Item>
         <Button
-         size="large"
+          size="large"
           type="primary"
           htmlType="submit"
           className="login-form-button"

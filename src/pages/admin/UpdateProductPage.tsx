@@ -1,4 +1,4 @@
-import { LoadingOutlined } from "@ant-design/icons";
+import { LoadingOutlined, UploadOutlined } from "@ant-design/icons";
 import {
   Button,
   Form,
@@ -7,10 +7,13 @@ import {
   Select,
   Spin,
   Typography,
+  Upload,
 } from "antd";
 import { useParams } from "react-router-dom";
 import ICategory from "../../interfaces/category";
 import IProduct from "../../interfaces/product";
+
+const { Dragger } = Upload;
 interface IUpdateProductPage {
   products: IProduct[];
   categories: ICategory[];
@@ -55,7 +58,18 @@ const UpdateProductPage = ({
   };
 
   const onFinish = (values: IProduct) => {
-    onHandleUpdate(values);
+    if (values?.image?.fileList) {
+      const newImages = values?.image?.fileList?.map(({ response }: any) => {
+        return {
+          url: response.urls[0].url,
+          publicId: response.urls[0].publicId,
+        };
+      });
+      const newValues = { ...values, image: newImages };
+      onHandleUpdate(newValues);
+    } else {
+      onHandleUpdate(values);
+    }
   };
 
   return (
@@ -87,13 +101,16 @@ const UpdateProductPage = ({
           style={{ width: "100%" }}
         />
       </Form.Item>
+
       <Form.Item name="image" label="Image" rules={[{ required: true }]}>
-        <Input
-          size="large"
-          placeholder="Product Image"
-          addonBefore="https://"
-          addonAfter=".com"
-        />
+        <Dragger
+          name="image"
+          action="http://localhost:8080/api/images/upload"
+          listType="picture"
+          multiple
+        >
+          <Button icon={<UploadOutlined />}>Upload Image</Button>
+        </Dragger>
       </Form.Item>
 
       <Form.Item

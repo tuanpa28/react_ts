@@ -50,7 +50,7 @@ const ProductManagementPage = ({
       title: "Image",
       dataIndex: "image",
       key: "image",
-      render: (image) => <img width={50} src={image} />,
+      render: (image) => <img width={50} src={image[0].url} />,
     },
     {
       title: "Price",

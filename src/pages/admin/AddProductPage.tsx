@@ -1,8 +1,20 @@
 import IProduct from "../../interfaces/product";
 import ICategory from "../../interfaces/category";
-import { Button, Form, Input, InputNumber, Typography, Select } from "antd";
+import {
+  Button,
+  Form,
+  Input,
+  InputNumber,
+  Typography,
+  Select,
+  Upload,
+  UploadProps,
+  message,
+} from "antd";
 import { UploadOutlined } from "@ant-design/icons";
-import { Space, Upload } from "antd";
+
+const { Dragger } = Upload;
+
 interface IAddProductPage {
   onHandleCreate: (product: IProduct) => void;
   categories: ICategory[];
@@ -24,8 +36,32 @@ const AddProductPage = ({ onHandleCreate, categories }: IAddProductPage) => {
   };
 
   const onFinish = (values: IProduct) => {
-    console.log(values);
-    onHandleCreate(values);
+    const newImages = values?.image?.fileList?.map(({ response }: any) => {
+      return { url: response.urls[0].url, publicId: response.urls[0].publicId };
+    });
+    const newValues = { ...values, image: newImages };
+    onHandleCreate(newValues);
+  };
+
+  const props: UploadProps = {
+    listType: "picture",
+    name: "image",
+    multiple: true,
+    action: "http://localhost:8080/api/images/upload",
+    onChange(info) {
+      const { status, response } = info.file;
+      if (status !== "uploading") {
+        console.log(info.file, info.fileList);
+      }
+      if (status === "done") {
+        message.success(`${info.file.name} file uploaded successfully.`);
+      } else if (status === "error") {
+        message.error(`${info.file.name} file upload failed.`);
+      }
+    },
+    onDrop(e) {
+      console.log("Dropped files", e.dataTransfer.files);
+    },
   };
 
   return (
@@ -60,32 +96,11 @@ const AddProductPage = ({ onHandleCreate, categories }: IAddProductPage) => {
         />
       </Form.Item>
 
-      <Form.Item
-        name="image"
-        label="Image"
-        rules={[
-          { required: true },
-          { whitespace: true, message: "${label} is required!" },
-        ]}
-      >
-        <Input
-          size="large"
-          placeholder="Product Image"
-          addonBefore="https://"
-          addonAfter=".com"
-        />
-      </Form.Item>
-
-      {/* <Form.Item name="image" label="Image" rules={[{ required: true }]}>
-        <Upload
-          // action="https://api.cloudinary.com/v1_1/dugodumc5/image/upload"
-          listType="picture"
-          // maxCount={3}
-          // multiple
-        >
+      <Form.Item name="image" label="Image" rules={[{ required: true }]}>
+        <Dragger {...props}>
           <Button icon={<UploadOutlined />}>Upload Image</Button>
-        </Upload>
-      </Form.Item> */}
+        </Dragger>
+      </Form.Item>
 
       <Form.Item
         name="description"
