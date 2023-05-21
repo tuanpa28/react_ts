@@ -30,11 +30,14 @@ import { message } from "antd";
 import CategoryManagementPage from "./pages/admin/CategoryManagementPage";
 import AddCategoryPage from "./pages/admin/AddCategoryPage";
 import UpdateCategoryPage from "./pages/admin/UpdateCategoryPage";
+import { deleteImages } from "./api/upload";
 
 function App() {
   const navigate = useNavigate();
   const [products, setProducts] = useState<IProduct[]>([]);
   const [categories, setCategories] = useState<ICategory[]>([]);
+
+  const searchParams = new URLSearchParams(window.location.search);
 
   // Get Categories
   useEffect(() => {
@@ -56,13 +59,13 @@ function App() {
       try {
         const {
           data: { products },
-        } = await getProducts();
+        } = await getProducts(window.location.search);
         setProducts(products.data);
       } catch (error) {
         console.log(error);
       }
     })();
-  }, []);
+  }, [window.location.search]);
 
   // Create Product
   const onHandleCreate = async (product: IProduct) => {
@@ -123,7 +126,14 @@ function App() {
   // Remove Product
   const onHandleRemove = async (id: string) => {
     try {
-      await deleteProduct(id);
+      const { data } = await deleteProduct(id);
+      // call api xóa image
+      console.log(data.product.image);
+      const a = data.product.image.map(
+        async (item: any) => await deleteImages(item.publicId)
+      );
+      console.log(a);
+
       const newPro = products?.filter((product) => product._id !== id);
       setProducts(newPro);
     } catch (error) {
@@ -150,7 +160,12 @@ function App() {
           <Route index element={<HomePage />} />
           {/* Products */}
           <Route path="products">
-            <Route index element={<ProductsPage products={products} />} />
+            <Route
+              index
+              element={
+                <ProductsPage products={products} searchParams={searchParams} />
+              }
+            />
             {/* Product detail */}
             <Route
               path=":id"

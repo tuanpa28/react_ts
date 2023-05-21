@@ -10,8 +10,8 @@ const options = () => {
   };
 };
 
-const getProducts = () => {
-  return instance.get(`products`);
+const getProducts = (opctions?: string) => {
+  return instance.get(`products${opctions ?? ""}`);
 };
 
 const getProduct = (id: string) => {

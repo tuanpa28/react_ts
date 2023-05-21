@@ -130,6 +130,7 @@ const ProductManagementPage = ({
         loading
       />
       <Table
+        pagination={{ pageSize: 5 }}
         columns={columns}
         dataSource={filterPro}
         expandable={{

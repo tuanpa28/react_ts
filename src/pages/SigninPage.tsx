@@ -4,6 +4,7 @@ import { signin } from "../api/auth";
 import IUser from "../interfaces/auth";
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Typography, message, notification } from "antd";
+import axios from "axios";
 
 const SigninPage = () => {
   const navigate = useNavigate();
@@ -21,6 +22,10 @@ const SigninPage = () => {
         message: response.data.message,
       });
     }
+  };
+
+  const loginGoogle = () => {
+    axios.get("http://localhost:8080/api/auth/google");
   };
 
   return (
@@ -63,6 +68,15 @@ const SigninPage = () => {
           style={{ width: "100%" }}
         >
           Đăng nhập
+        </Button>
+        <Button
+          size="large"
+          type="primary"
+          className="login-form-button"
+          style={{ width: "100%" }}
+          onClick={loginGoogle}
+        >
+          Google
         </Button>
         Or <Link to={"/signup"}>register now!</Link>
       </Form.Item>

@@ -10,17 +10,19 @@ const { Meta } = Card;
 
 interface ProductsPage {
   products: IProduct[];
+  searchParams: any;
 }
 
-const ProductsPage = ({ products }: ProductsPage) => {
+const ProductsPage = ({ products, searchParams }: ProductsPage) => {
   const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
   if (!products) return <Spin indicator={antIcon} />;
 
   const [searchText, setSearchText] = useState("");
+  const onHandleSubmit = (value: string) => {
+    searchParams.set("_searchText", value)
+    window.location.href = `http://localhost:5173/products?${searchParams.toString()}`;
+  };
 
-  const filterPro = products?.filter((item) =>
-    item?.name.toLocaleLowerCase().includes(searchText.toLocaleLowerCase())
-  );
   return (
     <div style={{ maxWidth: "90%", margin: "0 auto" }}>
       <Search
@@ -29,16 +31,18 @@ const ProductsPage = ({ products }: ProductsPage) => {
         size="large"
         value={searchText}
         onChange={(event) => setSearchText(event.target.value)}
-        loading
+        onSearch={onHandleSubmit}
+        enterButton="Search"
+        allowClear
       />
       <Row gutter={[16, 16]}>
-        {filterPro?.map((product) => (
+        {products?.map((product) => (
           <Col span={6}>
             <Link to={`/products/${product._id}`}>
               <Card
                 hoverable
                 style={{ width: 280 }}
-                cover={<img src={product.image} />}
+                cover={<img src={product.image[0].url} />}
               >
                 <Meta
                   title={product.name}
